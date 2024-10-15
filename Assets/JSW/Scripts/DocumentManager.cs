@@ -9,15 +9,15 @@ using UnityEngine;
 using UnityEngine.Networking;
 using File = System.IO.File;
 
-public class DocumentManager_JSW : MonoBehaviour
+public class DocumentManager : MonoBehaviour
 {
     AudioClip recordedClip;
     private List<float> recordedData = new List<float>(); // 누적할 데이터 리스트
-    public Device_JSW device;
+    public Device device;
     string path = "";
-    public bool isRecording { get; set; }
+    public bool IsRecording { get; private set; }
     public GameObject button;
-    WhiteBoard_JSW whiteBoard;
+    WhiteBoard whiteBoard;
     Recorder recorder;
 
     // Start is called before the first frame update
@@ -25,17 +25,55 @@ public class DocumentManager_JSW : MonoBehaviour
     {
         if (GameObject.Find("WhiteBoard(Clone)")  != null)
         {
-            whiteBoard = GameObject.Find("WhiteBoard(Clone)").GetComponent<WhiteBoard_JSW>();
+            whiteBoard = GameObject.Find("WhiteBoard(Clone)").GetComponent<WhiteBoard>();
             recorder = whiteBoard.GetComponent<Recorder>();
         }
     }
-
+    // 전체 녹음 시작
     public void StartRecording()
     {
-        isRecording = true;
+        IsRecording = true;
         recordedData = new List<float>();
         StartCoroutine(ContinuousRecording());
         whiteBoard.StartRecording();
+    }
+    // 전체 녹음 종료
+    public void StopRecording()
+    {
+        IsRecording = false;
+        Microphone.End(null);
+        StopCoroutine(ContinuousRecording());
+        GatherData();
+        recordedClip = AudioClip.Create("FinalRecording", recordedData.Count, 1, 4410, false);
+        recordedClip.SetData(recordedData.ToArray(), 0);
+        whiteBoard.StopRecording();
+        // 병합
+        recordedClip = MixAudioClips(whiteBoard.GetRecordedClip(), recordedClip);
+        // 저장
+        SaveAudioClipToWAV(Application.dataPath + "/test.wav");
+        path = Application.dataPath + "/test.wav";
+    }
+    // AI 서버 회의 요약 요청
+    public void GetDocument()
+    {
+        button.SetActive(false);
+        // Api 호출
+        HttpManager.HttpInfo info = new HttpManager.HttpInfo();
+        info.url = "https://boss-goblin-tolerant.ngrok-free.app/cleaning_summary/";
+        info.contentType = "audio/wav";
+        info.body = path;
+        info.onComplete = (DownloadHandler downloadHandler) =>
+        {
+            button.SetActive(true);
+            print(downloadHandler.text);
+            string value = downloadHandler.text;
+            GameObject square = PhotonNetwork.Instantiate("Square", new Vector3(device.Objs.transform.position.x, device.Objs.transform.position.y, 0), Quaternion.identity);
+            Square obj = square.GetComponent<Square>();
+            obj.RPC_Init(Color.white);
+            obj.RPC_Place();
+            StartCoroutine(ChangeValue(obj, value));
+        };
+        StartCoroutine(HttpManager.GetInstance().UploadFileByFormData(info));
     }
     IEnumerator ContinuousRecording()
     {
@@ -55,43 +93,7 @@ public class DocumentManager_JSW : MonoBehaviour
         recordedClip.GetData(data, 0);
         recordedData.AddRange(data);
     }
-    public void StopRecording()
-    {
-        isRecording = false;
-        Microphone.End(null);
-        StopCoroutine(ContinuousRecording());
-        GatherData();
-        recordedClip = AudioClip.Create("FinalRecording", recordedData.Count, 1, 4410, false);
-        recordedClip.SetData(recordedData.ToArray(), 0);
-        whiteBoard.StopRecording();
-        // 병합
-        recordedClip = MixAudioClips(whiteBoard.GetRecordedClip(), recordedClip);
-        // 저장
-        SaveAudioClipToWAV(Application.dataPath + "/test.wav");
-        path = Application.dataPath + "/test.wav";
-    }
-    public void GetDocument()
-    {
-        button.SetActive(false);
-        // Api 호출
-        HttpManager.HttpInfo info = new HttpManager.HttpInfo();
-        info.url = "https://boss-goblin-tolerant.ngrok-free.app/cleaning_summary/";
-        info.contentType = "audio/wav";
-        info.body = path;
-        info.onComplete = (DownloadHandler downloadHandler) =>
-        {
-            button.SetActive(true);
-            print(downloadHandler.text);
-            string value = downloadHandler.text;
-            GameObject square = PhotonNetwork.Instantiate("Square", new Vector3(device.objs.transform.position.x, device.objs.transform.position.y, 0), Quaternion.identity);
-            Square_JSW obj = square.GetComponent<Square_JSW>();
-            obj.RPC_Init(Color.white);
-            obj.RPC_Place();
-            StartCoroutine(ChangeValue(obj, value));
-        };
-        StartCoroutine(HttpManager.GetInstance().UploadFileByFormData(info));
-    }
-    IEnumerator ChangeValue(Square_JSW obj, string value)
+    IEnumerator ChangeValue(Square obj, string value)
     {
         yield return null;
         obj.OnInputValueChanged(value);
@@ -159,7 +161,7 @@ public class DocumentManager_JSW : MonoBehaviour
         fileStream.Write(bytesData, 0, bytesData.Length);
     }
     // 오디오클립 병합
-    public AudioClip MixAudioClips(AudioClip clip1, AudioClip clip2)
+    AudioClip MixAudioClips(AudioClip clip1, AudioClip clip2)
     {
         // 각 클립의 샘플 수와 채널 수
         int clip1Samples = clip1.samples;

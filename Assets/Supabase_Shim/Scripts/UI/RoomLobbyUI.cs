@@ -44,7 +44,7 @@ public class RoomLobbyUI : MonoBehaviourPunCallbacks
             texture.LoadImage(imageData);
 
             Sprite screenshotSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            swipeUI.transform.GetChild(0).GetComponent<Image>().sprite = screenshotSprite;
+            swipeUI.transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().sprite = screenshotSprite;
         }
         else { Debug.Log("파일 없음"); }
 

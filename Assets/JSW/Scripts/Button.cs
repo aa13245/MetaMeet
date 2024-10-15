@@ -1,21 +1,19 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using static IInteract;
 
-public class Button_JSW : MonoBehaviour, IInteract
+public class Button : MonoBehaviour, IInteract
 {
-    public Device_JSW device;
+    public Device device;
     bool hover;
-    public Image hoverImage { get; protected set; }
+    public UnityEngine.UI.Image HoverImage { get; protected set; }
     public void Interact(Vector3 pos, KeyCode keyCode, KeyState keyState, float value = 0)
     {
         if (keyCode == KeyCode.Mouse0)
         {
-            if (keyState == KeyState.Down) interactFunc();
+            if (keyState == KeyState.Down) InteractFunc();
             else if (keyState == KeyState.Idle) Hover();
         }
 
@@ -38,10 +36,10 @@ public class Button_JSW : MonoBehaviour, IInteract
         Cancel
     }
     public ButtonFunction buttonKind;
-    public Action interactFunc { get; protected set; }
+    public Action InteractFunc { get; protected set; }
     void Hover()
     {
-        if (hoverImage == null) return;
+        if (HoverImage == null) return;
         hover = true;
         if (hoverCoroutine != null) StopCoroutine(hoverCoroutine);
         hoverCoroutine = StartCoroutine(IHover());
@@ -51,10 +49,10 @@ public class Button_JSW : MonoBehaviour, IInteract
     {
         if (buttonKind == ButtonFunction.CreateSquare)
         {
-            hoverImage = transform.Find("Hover").GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = transform.Find("Hover").GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                if (device.deviceState == Device_JSW.DeviceState.CreateSquare)
+                if (device.deviceState == Device.DeviceState.CreateSquare)
                 {
                     device.Idle();
                 }
@@ -66,10 +64,10 @@ public class Button_JSW : MonoBehaviour, IInteract
         }
         else if (buttonKind == ButtonFunction.CreateImage)
         {
-            hoverImage = transform.Find("Hover").GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = transform.Find("Hover").GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                if (device.deviceState == Device_JSW.DeviceState.CreateImage)
+                if (device.deviceState == Device.DeviceState.CreateImage)
                 {
                     device.Idle();
                 }
@@ -81,40 +79,40 @@ public class Button_JSW : MonoBehaviour, IInteract
         }
         else if (buttonKind == ButtonFunction.BringToFront)
         {
-            hoverImage = GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                device.display.SetColorUI(false);
-                device.display.SetAlignmentUI(false);
+                device.Display.SetColorUI(false);
+                device.Display.SetAlignmentUI(false);
                 device.objComp.RPC_MoveFrontOrBack(true);
             };
         }
         else if (buttonKind == ButtonFunction.SendToBack)
         {
-            hoverImage = GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                device.display.SetColorUI(false);
-                device.display.SetAlignmentUI(false);
+                device.Display.SetColorUI(false);
+                device.Display.SetAlignmentUI(false);
                 device.objComp.RPC_MoveFrontOrBack(false);
             };
         }
         else if (buttonKind == ButtonFunction.Bold)
         {
-            hoverImage = GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                device.display.SetColorUI(false);
-                device.display.SetAlignmentUI(false);
-                device.SelectedObj.GetComponent<Square_JSW>().RPC_Bold();
+                device.Display.SetColorUI(false);
+                device.Display.SetAlignmentUI(false);
+                device.SelectedObj.GetComponent<Square>().RPC_Bold();
             };
         }
         else if (buttonKind == ButtonFunction.Record)
         {
-            interactFunc = () =>
+            InteractFunc = () =>
             {
-                DocumentManager_JSW docMng = device.documentManager;
-                if (docMng.isRecording)
+                DocumentManager docMng = device.DocumentManager;
+                if (docMng.IsRecording)
                 {   // ≥Ï¿Ω ¡æ∑·
                     transform.GetChild(2).gameObject.SetActive(false);
                     transform.GetChild(1).gameObject.SetActive(true);
@@ -130,87 +128,87 @@ public class Button_JSW : MonoBehaviour, IInteract
         }
         else if (buttonKind == ButtonFunction.CreateDocument)
         {
-            hoverImage = GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                device.documentManager.GetDocument();
+                device.DocumentManager.GetDocument();
             };
         }
         else if (buttonKind == ButtonFunction.Color)
         {
-            hoverImage = GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                if (device.display.colorUI.activeSelf == false) device.display.SetColorUI(true);
-                else device.display.SetColorUI(false);
-                device.display.SetAlignmentUI(false);
+                if (device.Display.colorUI.activeSelf == false) device.Display.SetColorUI(true);
+                else device.Display.SetColorUI(false);
+                device.Display.SetAlignmentUI(false);
             };
         }
         else if (buttonKind == ButtonFunction.SetColor)
         {
-            hoverImage = GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                Color c = transform.GetChild(0).GetComponent<Image>().color;
+                Color c = transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color;
                 device.SetColor(c);
-                device.display.SetColorUI(false);
-                transform.parent.parent.GetChild(0).GetComponent<Image>().color = c;
+                device.Display.SetColorUI(false);
+                transform.parent.parent.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = c;
             };
         }
         else if (buttonKind == ButtonFunction.Alignment)
         {
-            hoverImage = GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                if (device.display.alignmentUI.activeSelf == false) device.display.SetAlignmentUI(true);
-                else device.display.SetAlignmentUI(false);
-                device.display.SetColorUI(false);
+                if (device.Display.alignmentUI.activeSelf == false) device.Display.SetAlignmentUI(true);
+                else device.Display.SetAlignmentUI(false);
+                device.Display.SetColorUI(false);
             };
         }
         else if (buttonKind == ButtonFunction.SetAlignment)
         {
-            hoverImage = GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
                 TextAlignmentOptions option;
                 if (gameObject.name == "Left") option = TextAlignmentOptions.Left;
                 else if (gameObject.name == "Center") option = TextAlignmentOptions.Center;
                 else option = TextAlignmentOptions.Right;
                 device.SetAlignmnet(option);
-                device.display.SetAlignmentUI(false);
-                device.display.SetAlignmentIcon(option);
+                device.Display.SetAlignmentUI(false);
+                device.Display.SetAlignmentIcon(option);
             };
         }
         else if (buttonKind == ButtonFunction.Share)
         {
-            hoverImage = transform.Find("Hover").GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = transform.Find("Hover").GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                device.camComp.RPC_Share();
+                device.CamComp.RPC_Share();
             };
         }
         else if (buttonKind == ButtonFunction.Following)
         {
-            hoverImage = transform.Find("Hover").GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = transform.Find("Hover").GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                device.camComp.RPC_Following();
+                device.CamComp.RPC_Following();
             };
         }
         else if (buttonKind == ButtonFunction.Cancel)
         {
-            hoverImage = transform.Find("Hover").GetComponent<Image>();
-            interactFunc = () =>
+            HoverImage = transform.Find("Hover").GetComponent<UnityEngine.UI.Image>();
+            InteractFunc = () =>
             {
-                device.camComp.Cancel();
+                device.CamComp.Cancel();
             };
         }
     }
     Coroutine hoverCoroutine;
     IEnumerator IHover()
     {
-        if (!hoverImage.enabled) hoverImage.enabled = true;
+        if (!HoverImage.enabled) HoverImage.enabled = true;
         yield return null;
-        if (!hover) hoverImage.enabled = false;
+        if (!hover) HoverImage.enabled = false;
     }
 }

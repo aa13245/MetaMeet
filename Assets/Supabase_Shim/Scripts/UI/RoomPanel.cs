@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class RoomPanel : MonoBehaviour
 {
     public TMP_Text[] roomTexts = new TMP_Text[3];
-    public Button btn_join;
+    public UnityEngine.UI.Button btn_join;
 
     public void SetRoomInfo(RoomInfo room)
     {

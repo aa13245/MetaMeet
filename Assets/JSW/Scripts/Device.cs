@@ -1,22 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using static IInteract;
 using SFB;
 using Photon.Pun;
-using static Obj_JSW;
+using static Obj;
 
-public class Device_JSW : MonoBehaviour
+public class Device : MonoBehaviour
 {
-    public WhiteBoard_JSW whiteBoard { get; private set; }
-    public Display_JSW display { get; private set; }
-    public DocumentManager_JSW documentManager { get; private set; }
-    public GameObject objs {  get; private set; }
-    public Camera cam { get; set; }
-    public Cam_JSW camComp { get; set; }
-    public Camera followingTarget { get; set; }
+    public WhiteBoard WhiteBoard { get; private set; }
+    public Display Display { get; private set; }
+    public DocumentManager DocumentManager { get; private set; }
+    public GameObject Objs {  get; private set; }
+    public Camera Cam { get; set; }
+    public Cam CamComp { get; set; }
+    public Camera FollowingTarget { get; set; }
     public Transform createSquare_Btn;
     public Transform createImage_Btn;
     public GameObject share_Btn;
@@ -40,19 +37,19 @@ public class Device_JSW : MonoBehaviour
     {
         if (GameObject.Find("WhiteBoard(Clone)") != null)
         {
-            whiteBoard = GameObject.Find("WhiteBoard(Clone)").GetComponent<WhiteBoard_JSW>();
-            display = GetComponentInChildren<Display_JSW>();
-            if (deviceKind == DeviceKind.LargeScreen) documentManager = GetComponent<DocumentManager_JSW>();
-            objs = whiteBoard.transform.Find("Objects").gameObject;
+            WhiteBoard = GameObject.Find("WhiteBoard(Clone)").GetComponent<WhiteBoard>();
+            Display = GetComponentInChildren<Display>();
+            if (deviceKind == DeviceKind.LargeScreen) DocumentManager = GetComponent<DocumentManager>();
+            Objs = WhiteBoard.transform.Find("Objects").gameObject;
         }
     }
     private void LateUpdate()
     {
         // 팔로잉 모드
-        if (followingTarget != null)
+        if (FollowingTarget != null)
         {
-            camComp.SetPos(followingTarget.transform.position);
-            camComp.SetZoom(followingTarget.orthographicSize);
+            CamComp.SetPos(FollowingTarget.transform.position);
+            CamComp.SetZoom(FollowingTarget.orthographicSize);
         }
         // 커서 화면 나갔을 때 고스팅 on/off
         if (ghost != null)
@@ -72,17 +69,17 @@ public class Device_JSW : MonoBehaviour
     }
     bool isMouse;
     GameObject ghost;
-    Obj_JSW ghostObj;
+    Obj ghostObj;
     GameObject selectedObj;
     public bool editText { get; set; }
-    public Obj_JSW objComp { get; set; }
+    public Obj objComp { get; set; }
     public GameObject SelectedObj { get { return selectedObj; }
         set {
             selectedObj = value;
-            if (selectedObj != null) objComp = selectedObj.GetComponent<Obj_JSW>();
+            if (selectedObj != null) objComp = selectedObj.GetComponent<Obj>();
             editText = false;
-            display.SetGizmo();
-            camComp.RPC_OtherSelect(display.idx, selectedObj != null ? objComp.pv.ViewID : -1, PhotonNetwork.LocalPlayer.NickName);
+            Display.SetGizmo();
+            CamComp.RPC_OtherSelect(Display.Idx, selectedObj != null ? objComp.pv.ViewID : -1, PhotonNetwork.LocalPlayer.NickName);
         }
     }
     Vector3 mousePos = Vector3.back;
@@ -97,13 +94,13 @@ public class Device_JSW : MonoBehaviour
             {
                 if (keyState == KeyState.Down) // 누를 때
                 {
-                    Ray ray = new Ray(new Vector3(x, y, whiteBoard.transform.position.z - 10), Vector3.forward);
+                    Ray ray = new Ray(new Vector3(x, y, WhiteBoard.transform.position.z - 10), Vector3.forward);
                     RaycastHit hitInfo;
                     if (Physics.Raycast(ray, out hitInfo))
                     {
 
                         GameObject newSelect = hitInfo.transform.gameObject;
-                        if (newSelect.GetComponent<Obj_JSW>().objKind == Obj_JSW.ObjKind.Square && newSelect == selectedObj) doubleSelect = true;
+                        if (newSelect.GetComponent<Obj>().objKind == Obj.ObjKind.Square && newSelect == selectedObj) doubleSelect = true;
                         else
                         {
                             doubleSelect = false;
@@ -134,7 +131,7 @@ public class Device_JSW : MonoBehaviour
                 }
                 else if (keyState == KeyState.Up) // 뗄 때
                 {
-                    Ray ray = new Ray(new Vector3(x, y, whiteBoard.transform.position.z - 10), Vector3.forward);
+                    Ray ray = new Ray(new Vector3(x, y, WhiteBoard.transform.position.z - 10), Vector3.forward);
                     RaycastHit hitInfo;
                     if (doubleSelect && Physics.Raycast(ray, out hitInfo) && hitInfo.transform.gameObject == selectedObj)
                     {   // 수정 모드
@@ -150,7 +147,7 @@ public class Device_JSW : MonoBehaviour
             {
                 if (selectedObj != null && !editText)
                 {
-                    whiteBoard.Remove(selectedObj);
+                    WhiteBoard.Remove(selectedObj);
                     objComp.RPC_Destroy();
                     SelectedObj = null;
                 }
@@ -172,13 +169,13 @@ public class Device_JSW : MonoBehaviour
                         if (deviceState == DeviceState.CreateSquare)
                         {
                             ghost = PhotonNetwork.Instantiate("Square", Vector3.zero, Quaternion.identity);
-                            ghostObj = ghost.GetComponent<Obj_JSW>();
-                            ghostObj.RPC_Init(createSquare_Btn.GetChild(1).GetComponent<Image>().color);
+                            ghostObj = ghost.GetComponent<Obj>();
+                            ghostObj.RPC_Init(createSquare_Btn.GetChild(1).GetComponent<UnityEngine.UI.Image>().color);
                         }
                         else
                         {
                             ghost = PhotonNetwork.Instantiate("Image", Vector3.zero,Quaternion.identity);
-                            ghostObj = ghost.GetComponent<Obj_JSW>();
+                            ghostObj = ghost.GetComponent<Obj>();
                             // Others
                             ghostObj.RPC_Init(default, loadTextureData);
                             // Me
@@ -190,19 +187,19 @@ public class Device_JSW : MonoBehaviour
                                 renderer.material.mainTexture = texture;
                                 ghostObj.SetScale(new Vector3(Mathf.Max(0.5f, texture.width / 200), Mathf.Max(0.5f, texture.height / 200), 1));
                             }
-                            ghost.transform.SetParent(objs.transform);
+                            ghost.transform.SetParent(Objs.transform);
                             ghostObj.ChangeObjState(ObjState.Ghost);
-                            ghostObj.whiteBoard = whiteBoard;
+                            ghostObj.WhiteBoard = WhiteBoard;
                         }
                     }
-                    ghost.transform.position = new Vector3(x, y, objs.transform.position.z - 5);
+                    ghost.transform.position = new Vector3(x, y, Objs.transform.position.z - 5);
                     ghostObj.RPC_SetPos(ghost.transform.position);
                 }
                 // 배치
                 else if (keyState == KeyState.Up)
                 {
                     ghostObj.RPC_SetPos(ghost.transform.position, true);
-                    ghost.GetComponent<Obj_JSW>().RPC_Place();
+                    ghost.GetComponent<Obj>().RPC_Place();
                     SelectedObj = ghost;
                     mousePos = new Vector3(x, y , -1);
                     ghost = null;
@@ -224,11 +221,11 @@ public class Device_JSW : MonoBehaviour
     {   // 휠
         if (value != 0f)
         {
-            cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - value * cam.orthographicSize, 1, 100);
-            Vector2 boardPos = display.Convert2Board();
-            cam.transform.Translate(-new Vector3(boardPos.x - x, boardPos.y - y, 0));
-            camComp.RPC_SetZoom(cam.orthographicSize);
-            camComp.RPC_SetPos(cam.transform.position, true);
+            Cam.orthographicSize = Mathf.Clamp(Cam.orthographicSize - value * Cam.orthographicSize, 1, 100);
+            Vector2 boardPos = Display.Convert2Board(Display.localPos);
+            Cam.transform.Translate(-new Vector3(boardPos.x - x, boardPos.y - y, 0));
+            CamComp.RPC_SetZoom(Cam.orthographicSize);
+            CamComp.RPC_SetPos(Cam.transform.position, true);
         }
         // 드래그
         else
@@ -239,13 +236,13 @@ public class Device_JSW : MonoBehaviour
             }
             else if (keyState == KeyState.Held)
             {
-                cam.transform.Translate(-new Vector3(x - mousePos.x, y - mousePos.y, 0));
-                camComp.RPC_SetPos(cam.transform.position);
+                Cam.transform.Translate(-new Vector3(x - mousePos.x, y - mousePos.y, 0));
+                CamComp.RPC_SetPos(Cam.transform.position);
             }
             if (keyState == KeyState.Up)
             {
                 mousePos = new Vector3(x, y, -1);
-                camComp.RPC_SetPos(cam.transform.position, true);
+                CamComp.RPC_SetPos(Cam.transform.position, true);
             }
         }
     }
@@ -259,7 +256,7 @@ public class Device_JSW : MonoBehaviour
         Bottom, Middle, Top
     }
     Vertical vertical;
-    public void SetSize(float x, float y, KeyCode keyCode, KeyState keyState, SizeGizmo_JSW gizmo = null)
+    public void SetSize(float x, float y, KeyCode keyCode, KeyState keyState, SizeGizmo gizmo = null)
     {   // 기즈모 처음 눌렀을 때
         if (deviceState != DeviceState.SetSize)
         {
@@ -308,7 +305,7 @@ public class Device_JSW : MonoBehaviour
     }
     public void SetFontSize(string value)
     {
-        if (value != "") selectedObj.GetComponent<Square_JSW>().RPC_SetFontSize(float.Parse(value));
+        if (value != "") selectedObj.GetComponent<Square>().RPC_SetFontSize(float.Parse(value));
     }
     void OffAll()
     {
@@ -327,12 +324,12 @@ public class Device_JSW : MonoBehaviour
         {
             OffAll();
             deviceState = DeviceState.CreateSquare;
-            createSquare_Btn.GetChild(0).GetComponent<Image>().color = new Color(0.7686f, 1, 0.835f);
+            createSquare_Btn.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = new Color(0.7686f, 1, 0.835f);
             SelectedObj = null;
         }
         else
         {
-            createSquare_Btn.GetChild(0).GetComponent<Image>().color = Color.white;
+            createSquare_Btn.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = Color.white;
         }
     }
     byte[] loadTextureData;
@@ -342,7 +339,7 @@ public class Device_JSW : MonoBehaviour
         {
             OffAll();
             deviceState = DeviceState.CreateImage;
-            createImage_Btn.GetChild(0).GetComponent<Image>().color = new Color(0.7686f, 1, 0.835f);
+            createImage_Btn.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = new Color(0.7686f, 1, 0.835f);
             SelectedObj = null;
             string[] ex = new string[]
             {
@@ -363,21 +360,21 @@ public class Device_JSW : MonoBehaviour
         }
         else
         {
-            createImage_Btn.GetChild(0).GetComponent<Image>().color = Color.white;
+            createImage_Btn.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = Color.white;
         }
     }
     public void SetColor(Color c)
     {
-        Square_JSW squareComp = SelectedObj.GetComponent<Square_JSW>();
+        Square squareComp = SelectedObj.GetComponent<Square>();
         squareComp.RPC_SetBGColor(new float[] { c.r, c.g, c.b, c.a });
         if (createSquare_Btn != null)
         {
-            createSquare_Btn.GetChild(1).GetComponent<Image>().color = c;
+            createSquare_Btn.GetChild(1).GetComponent<UnityEngine.UI.Image>().color = c;
         }
     }
     public void SetAlignmnet(TextAlignmentOptions option)
     {
-        Square_JSW squareComp = SelectedObj.GetComponent<Square_JSW>();
+        Square squareComp = SelectedObj.GetComponent<Square>();
         squareComp.RPC_SetAlignment((int)option);
     }
     public void Share(int viewId)
@@ -385,7 +382,7 @@ public class Device_JSW : MonoBehaviour
         // 공유 껐을 때
         if (viewId == -1)
         {
-            followingTarget = null;
+            FollowingTarget = null;
             if (deviceKind == DeviceKind.PersonalDevice)
             {
                 share_Btn.SetActive(true);
@@ -394,7 +391,7 @@ public class Device_JSW : MonoBehaviour
             }
         }
         // 자신일 때
-        else if (viewId == camComp.pv.ViewID)
+        else if (viewId == CamComp.pv.ViewID)
         {
             share_Btn.SetActive(false);
             cancel_Btn.SetActive(true);
@@ -407,23 +404,23 @@ public class Device_JSW : MonoBehaviour
         }
         else if (deviceKind == DeviceKind.LargeScreen)
         {
-            followingTarget = PhotonNetwork.GetPhotonView(viewId).GetComponent<Camera>();
+            FollowingTarget = PhotonNetwork.GetPhotonView(viewId).GetComponent<Camera>();
         }
     }
     public void Following(bool on)
     {
         if (on)
         {
-            followingTarget = PhotonNetwork.GetPhotonView(whiteBoard.sharer).GetComponent<Camera>();
+            FollowingTarget = PhotonNetwork.GetPhotonView(WhiteBoard.Sharer).GetComponent<Camera>();
             share_Btn.SetActive(false);
             following_Btn.SetActive(false);
             cancel_Btn.SetActive(true);
         }
         else
         {
-            followingTarget = null;
+            FollowingTarget = null;
             cancel_Btn.SetActive(false);
-            if (whiteBoard.sharer == -1) share_Btn.SetActive(true);
+            if (WhiteBoard.Sharer == -1) share_Btn.SetActive(true);
             else following_Btn.SetActive(true);
         }
     }

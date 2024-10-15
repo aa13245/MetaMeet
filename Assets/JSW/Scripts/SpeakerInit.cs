@@ -1,6 +1,4 @@
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpeakerInit : MonoBehaviour, IPunObservable
@@ -15,7 +13,7 @@ public class SpeakerInit : MonoBehaviour, IPunObservable
         Transform player = PhotonView.Find(viewId).transform;
         gameObject.transform.SetParent(player);
         transform.position = player.position;
-        if (!GetComponent<PhotonView>().IsMine) GameObject.Find("WhiteBoard(Clone)").GetComponent<WhiteBoard_JSW>().audioSources.Add(GetComponent<AudioSource>());
+        if (!GetComponent<PhotonView>().IsMine) GameObject.Find("WhiteBoard(Clone)").GetComponent<WhiteBoard>().audioSources.Add(GetComponent<AudioSource>());
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -24,6 +22,6 @@ public class SpeakerInit : MonoBehaviour, IPunObservable
     }
     private void OnDestroy()
     {
-        if (!GetComponent<PhotonView>().IsMine) GameObject.Find("WhiteBoard(Clone)").GetComponent<WhiteBoard_JSW>().audioSources.Remove(GetComponent<AudioSource>());
+        if (!GetComponent<PhotonView>().IsMine) GameObject.Find("WhiteBoard(Clone)").GetComponent<WhiteBoard>().audioSources.Remove(GetComponent<AudioSource>());
     }
 }

@@ -1,12 +1,9 @@
 using Photon.Pun;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using UnityEngine;
 
-public class Image_JSW : Obj_JSW, IPunObservable
+public class Image : Obj, IPunObservable
 {
     public override void ChangeObjState(ObjState s)
     {
@@ -23,6 +20,7 @@ public class Image_JSW : Obj_JSW, IPunObservable
             mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.3f);
         }
     }
+    // 포톤 통신 트래픽 제한 이슈로 인해 사진 정보 전송을 100byte씩 나눔
     byte[] data = null;
     public override void RPC_Init(Color c = default, byte[] imgData = null)
     {

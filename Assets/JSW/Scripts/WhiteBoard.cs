@@ -1,17 +1,17 @@
-using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WhiteBoard_JSW : MonoBehaviour
+public class WhiteBoard : MonoBehaviour
 {
-    public int sharer { get; set; }
+    public int Sharer { get; set; }
     public Transform objsTf;
     List<GameObject> objs = new List<GameObject>();
 
-    public int idxcnt { get; set; }
-    public List<Display_JSW> displays = new List<Display_JSW>();
+    public int Idxcnt { get; set; }
+    public List<Display> displays = new List<Display>();
+    // 오브젝트 목록에 추가
     public void Add(GameObject obj)
     {
         objs.Add(obj);
@@ -24,10 +24,12 @@ public class WhiteBoard_JSW : MonoBehaviour
             obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, objs[^2].transform.position.z - 0.000001f);
         }
     }
+    // 오브젝트 목록에서 제거
     public void Remove(GameObject obj)
     {
         objs.Remove(obj);
     }
+    // 맨 앞/뒤로 보내기
     public void MoveFrontOrBack(GameObject obj, bool front)
     {
         if (objs.Count == 1) return;
@@ -45,6 +47,7 @@ public class WhiteBoard_JSW : MonoBehaviour
         }
     }
 
+    // 포톤 보이스 전체 녹음 기능
     public List<AudioSource> audioSources; // 녹음할 AudioSource 리스트
     private AudioClip recordedClip; // 녹음된 AudioClip
     private int sampleRate = 44100; // 샘플링 주파수
@@ -53,13 +56,13 @@ public class WhiteBoard_JSW : MonoBehaviour
 
     void Start()
     {
-        sharer = -1;
+        Sharer = -1;
         audioSources = new List<AudioSource>(FindObjectsOfType<AudioSource>());
         recordedData = new List<float>();
     }
     public void OtherSelect(int idx, int viewId, string nickname)
     {
-        foreach (Display_JSW display in displays)
+        foreach (Display display in displays)
         {
             display.OtherSelect(idx, viewId, nickname);
         }
