@@ -7,43 +7,43 @@ public class WhiteBoard : MonoBehaviour
 {
     public int Sharer { get; set; }
     public Transform objsTf;
-    List<GameObject> objs = new List<GameObject>();
+    List<GameObject> Objs = new List<GameObject>();
 
     public int Idxcnt { get; set; }
     public List<Display> displays = new List<Display>();
     // 오브젝트 목록에 추가
     public void Add(GameObject obj)
     {
-        objs.Add(obj);
-        if (objs.Count == 1)
+        Objs.Add(obj);
+        if (Objs.Count == 1)
         {
             obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, objsTf.position.z);
         }
         else
         {
-            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, objs[^2].transform.position.z - 0.000001f);
+            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, Objs[^2].transform.position.z - 0.000001f);
         }
     }
     // 오브젝트 목록에서 제거
     public void Remove(GameObject obj)
     {
-        objs.Remove(obj);
+        Objs.Remove(obj);
     }
     // 맨 앞/뒤로 보내기
     public void MoveFrontOrBack(GameObject obj, bool front)
     {
-        if (objs.Count == 1) return;
+        if (Objs.Count == 1) return;
         if (front)
         {
-            objs.Remove(obj);
-            objs.Add(obj);
-            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, objs[^2].transform.position.z - 0.000001f);
+            Objs.Remove(obj);
+            Objs.Add(obj);
+            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, Objs[^2].transform.position.z - 0.000001f);
         }
         else
         {
-            objs.Remove(obj);
-            objs.Insert(0, obj);
-            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, objs[1].transform.position.z + 0.000001f);
+            Objs.Remove(obj);
+            Objs.Insert(0, obj);
+            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, Objs[1].transform.position.z + 0.000001f);
         }
     }
 

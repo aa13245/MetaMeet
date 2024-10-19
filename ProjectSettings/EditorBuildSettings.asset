@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Supabase_Shim/Scenes/LogIn.unity
-    guid: 6fa7b6b068c1c0a4b846561752175348
+    path: Assets/JSW/Scripts/DemoScene.unity
+    guid: 097c65ec556a04041b0a8325c5f966ee
   - enabled: 1
     path: Assets/Supabase_Shim/Scenes/RoomLobbyMain.unity
     guid: ee0a4fea9f7f55a40812fc8fdc7c3a6b
@@ -17,4 +17,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/TA/TA_Level_ver3.unity
     guid: c3a8dcf46c2335e46ba278c2f104c18e
+  - enabled: 1
+    path: Assets/JSW/JSWScene.unity
+    guid: a1f49507f850a6244b797a70edb86f63
+  - enabled: 1
+    path: Assets/Supabase_Shim/Scenes/LogIn.unity
+    guid: 6fa7b6b068c1c0a4b846561752175348
   m_configObjects: {}

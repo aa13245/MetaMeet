@@ -84,7 +84,7 @@ public class Button : MonoBehaviour, IInteract
             {
                 device.Display.SetColorUI(false);
                 device.Display.SetAlignmentUI(false);
-                device.objComp.RPC_MoveFrontOrBack(true);
+                device.ObjComp.RPC_MoveFrontOrBack(true);
             };
         }
         else if (buttonKind == ButtonFunction.SendToBack)
@@ -94,7 +94,7 @@ public class Button : MonoBehaviour, IInteract
             {
                 device.Display.SetColorUI(false);
                 device.Display.SetAlignmentUI(false);
-                device.objComp.RPC_MoveFrontOrBack(false);
+                device.ObjComp.RPC_MoveFrontOrBack(false);
             };
         }
         else if (buttonKind == ButtonFunction.Bold)

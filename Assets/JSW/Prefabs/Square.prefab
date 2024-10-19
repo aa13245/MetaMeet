@@ -290,13 +290,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4065523980669626547}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8364ac8cf77a5374baf270302cb3de00, type: 3}
+  m_Script: {fileID: 11500000, guid: 27b4d39baf9f5474490045ee2d3cb452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pv: {fileID: 1623398877542847644}
   objKind: 0
   objState: 0
   imgTf: {fileID: 8427692128562129037}
+  img: {fileID: 7740125988239259443}
   inputFieldTf: {fileID: 6185268200352300584}
   boxCollider: {fileID: 8624469274659746851}
 --- !u!65 &8624469274659746851

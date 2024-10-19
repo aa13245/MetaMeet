@@ -83,6 +83,12 @@ public class Display : MonoBehaviourPunCallbacks, IInteract
     }
     public Vector3 localPos { get; private set; }
     // 디스플레이 터치 좌표를 화이트보드 상 좌표로 반환
+    public void Interact(Vector3 pos, KeyCode keyCode, KeyState keyState, float value)
+    {
+        localPos = transform.InverseTransformPoint(pos); // 디스플레이 터치 지점 로컬좌표
+        Vector2 boardPos = Convert2Board(localPos);  // 카메라상 변환 좌표
+        device.Touch(boardPos.x, boardPos.y, keyCode, keyState, value);
+    }
     public Vector2 Convert2Board(Vector3 _localPos)
     {   // 디스플레이의 터치 지점 좌표 ( 0 ~ 1 )
         float x = _localPos.x + 0.5f;
@@ -95,18 +101,12 @@ public class Display : MonoBehaviourPunCallbacks, IInteract
         float touchPosY = Mathf.Lerp(CamObj.transform.position.y - camHeight / 2, CamObj.transform.position.y + camHeight / 2, y);
         return new Vector2(touchPosX, touchPosY);
     }
-    public void Interact(Vector3 pos, KeyCode keyCode, KeyState keyState, float value)
-    {
-        localPos = transform.InverseTransformPoint(pos); // 디스플레이 터치 지점 로컬좌표
-        Vector2 boardPos = Convert2Board(localPos);  // 카메라상 변환 좌표
-        device.Touch(boardPos.x, boardPos.y, keyCode, keyState, value);
-    }
     void UpdateGizmo()
     {   // 선택된 오브젝트 있을 때
         if (device.SelectedObj != null)
         {
             // 크기
-            Vector3 objScale = device.objComp.GetScale();
+            Vector3 objScale = device.ObjComp.GetScale();
             selectRT.sizeDelta = new Vector2(objScale.x * 112.5f + 1, objScale.y * 112.5f + 1) / cam.orthographicSize;
             // 디스플레이 상 위치 - (카메라 모서리부터의 거리 / 카메라 범위) 비율
             float camHeight = cam.orthographicSize * 2.0f;
@@ -118,7 +118,7 @@ public class Display : MonoBehaviourPunCallbacks, IInteract
             selectRT.localPosition = new Vector2(posRatio.x - 0.5f, posRatio.y - 0.5f);
             optionRT.localPosition = new Vector2(posRatio.x - 0.5f, posRatio.y - 0.4f + selectRT.sizeDelta.y / 450);
             // 텍스트 수정 모드
-            if (device.editText)
+            if (device.EditText)
             {
                 if (selectRT.GetChild(0).gameObject.activeSelf)
                 {

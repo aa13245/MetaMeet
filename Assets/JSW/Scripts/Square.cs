@@ -5,6 +5,7 @@ using UnityEngine;
 public class Square : Obj, IPunObservable
 {
     public RectTransform imgTf;
+    public UnityEngine.UI.Image img;
     public RectTransform inputFieldTf;
     public TMP_Text Text { get; set; }
     TMP_InputField inputField;
@@ -26,6 +27,23 @@ public class Square : Obj, IPunObservable
         imgTf.localScale = scale;
         inputFieldTf.sizeDelta = new Vector2(scale.x, scale.y) * 100;
         boxCollider.size = new Vector3(scale.x, scale.y, boxCollider.size.z);
+    }
+    public override void ChangeObjState(ObjState s)
+    {
+        if (objState == s) return;
+        objState = s;
+        if (s == ObjState.Idle)
+        {
+            Color pastColor = img.color;
+            pastColor.a = 1;
+            img.color = pastColor;
+        }
+        else if (s == ObjState.Ghost)
+        {
+            Color pastColor = img.color;
+            pastColor.a = 0.5f;
+            img.color = pastColor;
+        }
     }
     // 볼드체
     public void RPC_Bold()
@@ -57,12 +75,12 @@ public class Square : Obj, IPunObservable
     [PunRPC]
     public void SetBGColor(float[] color)
     {
-        transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color = new Color(color[0], color[1], color[2], color[3]);
+        img.color = new Color(color[0], color[1], color[2], color[3]);
     }
     // Get 배경 색상
     public Color GetBGColor()
     {
-        return transform.GetChild(0).GetComponent<UnityEngine.UI.Image>().color;
+        return img.color;
     }
     // 정렬 설정
     public void RPC_SetAlignment(int option)
@@ -81,25 +99,6 @@ public class Square : Obj, IPunObservable
     {
         SetBGColor(new float[] { color[0], color[1], color[2], color[3] });
         base.InitVirtual(color, imgData);
-    }
-    public override void ChangeObjState(ObjState s)
-    {
-        if (objState == s) return;
-        objState = s;
-        if (s == ObjState.Idle)
-        {
-            UnityEngine.UI.Image image = transform.GetChild(0).GetComponent<UnityEngine.UI.Image>();
-            Color pastColor = image.color;
-            pastColor.a = 1;
-            image.color = pastColor;
-        }
-        else if (s == ObjState.Ghost)
-        {
-            UnityEngine.UI.Image image = transform.GetChild(0).GetComponent<UnityEngine.UI.Image>();
-            Color pastColor = image.color;
-            pastColor.a = 0.5f;
-            image.color = pastColor;
-        }
     }
     // 텍스트 수정
     public void OnInputValueChanged(string text)
